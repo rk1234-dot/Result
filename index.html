@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F2:F19</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        input { width: 80%; padding: 10px; margin: 10px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid black; padding: 10px; }
+        th { background: lightgray; }
+    </style>
+</head>
+<body>
+
+    <h2>F2:F19</h2>
+    
+    <input type="text" id="searchBox" placeholder="A2:A19" onkeyup="searchResult()">
+    
+    <table id="resultTable">
+        <thead>
+            <tr>
+                <th>A2:A19</th>
+                <th>B2:B19</th>
+                <th>C2:C19</th>
+                <th>D2:D19</th>
+                <th>E2:E19</th>
+                <th>F2:F19</th>
+            </tr>
+        </thead>
+        <tbody id="resultBody">
+            <!-- google sheet-->
+        </tbody>
+    </table>
+
+    <script>
+        const sheetID = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTresJ52CanJ3IhmyuhBy_mwCuWJhJHM8EvrvOzm46JAMfRmYACvNrU32MR2h38sIKlC8gSCl5xFdYs/pubhtml";  // अपनी Google Sheet ID डालें
+        const apiUrl = https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?tqx=out:json;
+
+        fetch(apiUrl)
+            .then(response => response.text())
+            .then(data => {
+                let jsonData = JSON.parse(data.substr(47).slice(0, -2)); // JSON Data Extract
+                let rows = jsonData.table.rows;
+                let tableBody = document.getElementById("resultBody");
+
+                rows.forEach(row => {
+                    let tr = document.createElement("tr");
+                    row.c.forEach(cell => {
+                        let td = document.createElement("td");
+                        td.textContent = cell ? cell.v : "";
+                        tr.appendChild(td);
+                    });
+                    tableBody.appendChild(tr);
+                });
+            });
+
+        function searchResult() {
+            let input = document.getElementById("searchBox").value.toLowerCase();
+            let rows = document.getElementById("resultTable").getElementsByTagName("tr");
+
+            for (let i = 1; i < rows.length; i++) {
+                let txtValue = rows[i].textContent || rows[i].innerText;
+                rows[i].style.display = txtValue.toLowerCase().includes(input) ? "" : "none";
+            }
+        }
+    </script>
+
+</body>
+</html>
